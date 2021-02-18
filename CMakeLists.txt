@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(learn-cpp VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++-11")
+set(CMAKE_CXX_FLAGS "-Wall -std=c++20")
+# set(CMAKE_CXX_FLAGS_DEBUG "-O0 -pedantic-errors -Weffc++ -Wextra -Wsign-conversion -Werror -g")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O4 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
-add_executable(learn-cpp main.cpp)
+aux_source_directory(. sources)
 
-set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -pedantic-errors -Weffc++ -Wextra -Wsign-conversion -Werror -g -ggdb")
-# set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+add_executable(learn-cpp ${sources})
 
 include(CTest)
 enable_testing()

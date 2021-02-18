@@ -1,38 +1,114 @@
-#include <cstring> // for strlen()
-#include <cassert> // for assert()
+#include <iostream>
+#include <cstring>
 
-class MyString
+// Our Storage class for non-pointers
+template <class T>
+class Storage
 {
 private:
-    char *m_data{};
-    int m_length{};
+    T m_value;
 
 public:
-    MyString(const char *source = "")
+    Storage(T value)
     {
-        assert(source); // make sure source isn't a null string
-
-        // Find the length of the string
-        // Plus one character for a terminator
-        m_length = std::strlen(source) + 1;
-
-        // Allocate a buffer equal to this length
-        m_data = new char[m_length];
-
-        // Copy the parameter string into our internal buffer
-        for (int i{0}; i < m_length; ++i)
-            m_data[i] = source[i];
-
-        // Make sure the string is terminated
-        m_data[m_length - 1] = '\0';
+        m_value = value;
     }
 
-    ~MyString() // destructor
+    ~Storage()
     {
-        // We need to deallocate our string
-        delete[] m_data;
     }
 
-    char *getString() { return m_data; }
-    int getLength() { return m_length; }
+    void print()
+    {
+        std::cout << m_value << '\n';
+    }
 };
+
+// Partial-specialization of Storage class for pointers
+template <class T>
+class Storage<T *>
+{
+private:
+    T *m_value;
+
+public:
+    Storage(T *value)
+    {
+        m_value = new T(*value);
+    }
+
+    ~Storage()
+    {
+        delete m_value;
+    }
+
+    void print()
+    {
+        std::cout << *m_value << '\n';
+    }
+};
+
+// Full specialization of constructor for type char*
+template <>
+Storage<char *>::Storage(char *value)
+{
+    // Figure out how long the string in value is
+    int length = 0;
+    while (value[length] != '\0')
+        ++length;
+    ++length; // +1 to account for null terminator
+
+    // Allocate memory to hold the value string
+    m_value = new char[length];
+
+    // Copy the actual value string into the m_value memory we just allocated
+    for (int count = 0; count < length; ++count)
+        m_value[count] = value[count];
+}
+
+// Full specialization of destructor for type char*
+template <>
+Storage<char *>::~Storage()
+{
+    delete[] m_value;
+}
+
+// Full specialization of print function for type char*
+// Without this, printing a Storage<char*> would call Storage<T*>::print(), which only prints the first element
+template <>
+void Storage<char *>::print()
+{
+    std::cout << m_value;
+}
+
+int main()
+{
+    // Declare a non-pointer Storage to show it works
+    Storage<int> myint(5);
+    myint.print();
+
+    // Declare a pointer Storage to show it works
+    int x = 7;
+    Storage<int *> myintptr(&x);
+
+    // If myintptr did a pointer assignment on x,
+    // then changing x will change myintptr too
+    x = 9;
+    myintptr.print();
+
+    // Dynamically allocate a temporary string
+    char *name = new char[40]{"Alex"}; // requires C++14
+
+    // If your compiler isn't C++14 compatible, comment out the above line and uncomment these
+    //	char *name = new char[40];
+    //	strcpy(name, "Alex");
+
+    // Store the name
+    Storage<char *> myname(name);
+
+    // Delete the temporary string
+    delete[] name;
+
+    // Print out our name
+    myname.print();
+}
