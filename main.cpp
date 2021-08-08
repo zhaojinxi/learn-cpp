@@ -1,46 +1,28 @@
 #include <iostream>
-
-class USBDevice
-{
-private:
-    long m_id;
-
-public:
-    USBDevice(long id)
-        : m_id(id)
-    {
-    }
-
-    long getID() { return m_id; }
-};
-
-class NetworkDevice
-{
-private:
-    long m_id;
-
-public:
-    NetworkDevice(long id)
-        : m_id(id)
-    {
-    }
-
-    // long getID() { return m_id; }
-};
-
-class WirelessAdapter : public USBDevice, public NetworkDevice
-{
-public:
-    WirelessAdapter(long usbId, long networkId)
-        : USBDevice(usbId), NetworkDevice(networkId)
-    {
-    }
-};
+#include <vector>
 
 int main()
 {
-    WirelessAdapter c54G(5442, 181742);
-    std::cout << c54G.USBDevice::getID();
-
-    return 0;
+    std::vector<int> nums{4, 2, 6, 8, 9, 0, 7};
+    int target{12};
+    bool found{false};
+    for (int i {0}; i != nums.size(); i++)
+    {
+        for (int j{i + 1}; j != nums.size(); j++)
+        {
+            if (nums[i] + nums[j] == target)
+            {
+                std::cout << i << "," << j << " ";
+                found = true;
+            }
+            if (found)
+            {
+                break;
+            }
+        }
+        if (found)
+        {
+            break;
+        }
+    }
 }
