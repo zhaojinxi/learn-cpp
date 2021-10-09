@@ -1,46 +1,62 @@
 #include <iostream>
+#include <vector>
 
-class USBDevice
+using namespace std;
+
+struct ListNode
 {
-private:
-    long m_id;
-
-public:
-    USBDevice(long id)
-        : m_id(id)
-    {
-    }
-
-    long getID() { return m_id; }
+    int val;
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {}
+    ListNode(int x) : val(x), next(nullptr) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
-class NetworkDevice
-{
-private:
-    long m_id;
-
-public:
-    NetworkDevice(long id)
-        : m_id(id)
-    {
-    }
-
-    // long getID() { return m_id; }
-};
-
-class WirelessAdapter : public USBDevice, public NetworkDevice
+class Solution
 {
 public:
-    WirelessAdapter(long usbId, long networkId)
-        : USBDevice(usbId), NetworkDevice(networkId)
+
+
+    ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
     {
+        ListNode *tmp;
+        bool cond;
+
+        tmp = l1;
+        vector<int> a;
+        do
+        {
+            cout << tmp->val << endl;
+            a.push_back(tmp->val);
+            cond = tmp->next != nullptr;
+            tmp = tmp->next;
+        } while (cond);
+
+        tmp = l2;
+        vector<int> b;
+        do
+        {
+            cout << tmp->val << endl;
+            b.push_back(tmp->val);
+            cond = tmp->next != nullptr;
+            tmp = tmp->next;
+        } while (cond);
+
+        cout << "haha";
+
+        ListNode r;
+        return &r;
     }
 };
 
 int main()
 {
-    WirelessAdapter c54G(5442, 181742);
-    std::cout << c54G.USBDevice::getID();
+    ListNode a1{4};
+    ListNode a{2, &a1};
 
-    return 0;
+    ListNode b1{2};
+    ListNode b{1, &b1};
+
+    Solution s;
+    ListNode *r = s.addTwoNumbers(&a, &b);
 }
