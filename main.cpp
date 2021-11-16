@@ -1,62 +1,50 @@
 #include <iostream>
+#include <string>
 #include <vector>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+#include <typeinfo>
+#include <algorithm>
+#include <limits>
 
 using namespace std;
 
-struct ListNode
-{
-    int val;
-    ListNode *next;
-    ListNode() : val(0), next(nullptr) {}
-    ListNode(int x) : val(x), next(nullptr) {}
-    ListNode(int x, ListNode *next) : val(x), next(next) {}
-};
 
 class Solution
 {
 public:
-
-
-    ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
+    bool isPalindrome(int x)
     {
-        ListNode *tmp;
-        bool cond;
-
-        tmp = l1;
-        vector<int> a;
-        do
+        if(x<0)
         {
-            cout << tmp->val << endl;
-            a.push_back(tmp->val);
-            cond = tmp->next != nullptr;
-            tmp = tmp->next;
-        } while (cond);
+            return false;
+        }
 
-        tmp = l2;
-        vector<int> b;
-        do
+        string tmp{to_string(x)};
+        int length=tmp.length();
+        if (length%2 ==1)
         {
-            cout << tmp->val << endl;
-            b.push_back(tmp->val);
-            cond = tmp->next != nullptr;
-            tmp = tmp->next;
-        } while (cond);
-
-        cout << "haha";
-
-        ListNode r;
-        return &r;
+            length=length-1;
+        }
+        for (int i=0;i<length/2;i++)
+        {
+            if (tmp.at(i)!=tmp.at(tmp.length()-i-1))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
+
 int main()
 {
-    ListNode a1{4};
-    ListNode a{2, &a1};
+    int s{123321};
 
-    ListNode b1{2};
-    ListNode b{1, &b1};
-
-    Solution s;
-    ListNode *r = s.addTwoNumbers(&a, &b);
+    Solution tmp;
+    tmp.isPalindrome(s);
+    return 0;
 }
