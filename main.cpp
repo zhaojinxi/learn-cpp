@@ -60,42 +60,90 @@ using namespace std;
 // }
 
 
+/**
+ * @brief 函数指针
+ */
+typedef void (*Fun)();
+
+/**
+ * @brief 基类
+ */
 class Base
 {
-public:
-    inline virtual void who()
-    {
-        cout << "I am Base\n";
-    }
-    virtual ~Base() {}
-};
-class Derived : public Base
-{
-public:
-    inline void who()  // 不写inline时隐式内联
-    {
-        cout << "I am Derived\n";
-    }
+    public:
+        Base(){};
+        virtual void fun1()
+        {
+            cout << "Base::fun1()" << endl;
+        }
+        virtual void fun2()
+        {
+            cout << "Base::fun2()" << endl;
+        }
+        virtual void fun3(){}
+        ~Base(){};
 };
 
-int main()
+/**
+ * @brief 派生类
+ */
+class Derived: public Base
 {
-    int * aa=new int {98};
-    int bb=*new int {123};
-    cout<<bb<<endl;
-    cout<<*aa<<endl;
-    // 此处的虚函数 who()，是通过类（Base）的具体对象（b）来调用的，编译期间就能确定了，所以它可以是内联的，但最终是否内联取决于编译器。
-    Base b;
-    b.who();
+    public:
+        Derived(){};
+        void fun1()
+        {
+            cout << "Derived::fun1()" << endl;
+        }
+        void fun2()
+        {
+            cout << "DerivedClass::fun2()" << endl;
+        }
+        ~Derived(){};
+};
+/**
+ * @brief 获取vptr地址与func地址,vptr指向的是一块内存，这块内存存放的是虚函数地址，这块内存就是我们所说的虚表
+ *
+ * @param obj
+ * @param offset
+ *
+ * @return
+ */
+Fun getAddr(void* obj,unsigned int offset)
+{
+    cout<<"======================="<<endl;
+    void* vptr_addr = (void *)*(unsigned long *)obj;  //64位操作系统，占8字节，通过*(unsigned long *)obj取出前8字节，即vptr指针
+    printf("vptr_addr:%p\n",vptr_addr);
 
-    // 此处的虚函数是通过指针调用的，呈现多态性，需要在运行时期间才能确定，所以不能为内联。
-    Base *ptr = new Derived();
-    ptr->who();
+    /**
+     * @brief 通过vptr指针访问virtual table，因为虚表中每个元素(虚函数指针)在64位编译器下是8个字节，因此通过*(unsigned long *)vptr_addr取出前8字节，
+     * 后面加上偏移量就是每个函数的地址！
+     */
+    void* func_addr = (void *)*((unsigned long *)vptr_addr+offset);
+    printf("func_addr:%p\n",func_addr);
+    return (Fun)func_addr;
+}
+int main(void)
+{
+    Base ptr;
+    Derived d;
+    Base *pt = new Derived(); // 基类指针指向派生类实例
+    Base &pp = ptr; // 基类引用指向基类实例
+    Base &p = d; // 基类引用指向派生类实例
+    cout<<"基类对象直接调用"<<endl;
+    ptr.fun1();
+    cout<<"基类对象调用基类实例"<<endl;
+    pp.fun1();
+    cout<<"基类指针指向派生类实例并调用虚函数"<<endl;
+    pt->fun1();
+    cout<<"基类引用指向派生类实例并调用虚函数"<<endl;
+    p.fun1();
 
-    // 因为Base有虚析构函数（virtual ~Base() {}），所以 delete 时，会先调用派生类（Derived）析构函数，再调用基类（Base）析构函数，防止内存泄漏。
-    delete ptr;
-    ptr = nullptr;
-
-    system("pause");
+    // 手动查找vptr 和 vtable
+    Fun f1 = getAddr(pt, 0);
+    (*f1)();
+    Fun f2 = getAddr(pt, 1);
+    (*f2)();
+    delete pt;
     return 0;
 }
