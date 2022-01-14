@@ -5,14 +5,20 @@ set(CMAKE_CXX_COMPILER "clang++")
 
 project(learn-cpp VERSION 0.1.0)
 
-set(CMAKE_CXX_FLAGS "-Wall -std=c++20 -stdlib=libc++")
+set(CMAKE_C_FLAGS "-Wall -std=c2x")
+set(CMAKE_C_FLAGS_DEBUG "-O0 -g")
+# set(CMAKE_C_FLAGS_DEBUG "-O0 -pedantic-errors -Weffc++ -Wextra -Wsign-conversion -Werror -g")
+set(CMAKE_C_FLAGS_RELEASE "-O4 -DNDEBUG")
+set(CMAKE_C_FLAGS_MINSIZEREL "-Os -DNDEBUG")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
 
+set(CMAKE_CXX_FLAGS "-Wall -std=c++20 -stdlib=libc++")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 # set(CMAKE_CXX_FLAGS_DEBUG "-O0 -pedantic-errors -Weffc++ -Wextra -Wsign-conversion -Werror -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O4 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
-#aux_source_directory(. sources)
+aux_source_directory(. sources)
 
-add_executable(main main.cpp)
+add_executable(main main.cpp ${sources})

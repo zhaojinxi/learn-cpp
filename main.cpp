@@ -11,7 +11,6 @@
 
 using namespace std;
 
-
 // class Solution {
 // public:
 //     bool isMatch(string s, string p) {
@@ -59,91 +58,77 @@ using namespace std;
 //     return 0;
 // }
 
-
-/**
- * @brief 函数指针
- */
-typedef void (*Fun)();
-
-/**
- * @brief 基类
- */
-class Base
+namespace Color
 {
-    public:
-        Base(){};
-        virtual void fun1()
-        {
-            cout << "Base::fun1()" << endl;
-        }
-        virtual void fun2()
-        {
-            cout << "Base::fun2()" << endl;
-        }
-        virtual void fun3(){}
-        ~Base(){};
+    enum Type
+    {
+        RED = 15,
+        YELLOW,
+        BLUE
+    };
 };
 
 /**
- * @brief 派生类
+ * @brief 上述如果 using namespace Color 后，前缀还可以省去，使得代码简化。
+ * 不过，因为命名空间是可以随后被扩充内容的，所以它提供的作用域封闭性不高。
+ * 在大项目中，还是有可能不同人给不同的东西起同样的枚举类型名。
+ * 更“有效”的办法是用一个类或结构体来限定其作用域。
+ *
+ * 定义新变量的方法和上面命名空间的相同。
+ * 不过这样就不用担心类在别处被修改内容。
+ * 这里用结构体而非类，一是因为本身希望这些常量可以公开访问，
+ * 二是因为它只包含数据没有成员函数。
  */
-class Derived: public Base
+struct Color1
 {
-    public:
-        Derived(){};
-        void fun1()
-        {
-            cout << "Derived::fun1()" << endl;
-        }
-        void fun2()
-        {
-            cout << "DerivedClass::fun2()" << endl;
-        }
-        ~Derived(){};
+    enum Type
+    {
+        RED = 102,
+        YELLOW,
+        BLUE
+    };
 };
-/**
- * @brief 获取vptr地址与func地址,vptr指向的是一块内存，这块内存存放的是虚函数地址，这块内存就是我们所说的虚表
- *
- * @param obj
- * @param offset
- *
- * @return
- */
-Fun getAddr(void* obj,unsigned int offset)
-{
-    cout<<"======================="<<endl;
-    void* vptr_addr = (void *)*(unsigned long *)obj;  //64位操作系统，占8字节，通过*(unsigned long *)obj取出前8字节，即vptr指针
-    printf("vptr_addr:%p\n",vptr_addr);
 
+/**
+ * @brief C++11的枚举类
+ * 下面等价于enum class Color2:int
+ */
+enum class Color2
+{
+    RED = 2,
+    YELLOW,
+    BLUE
+};
+
+enum class Color3 : char; // 前向声明
+
+// 定义
+enum class Color3 : char
+{
+    RED = 'r',
+    BLUE
+};
+
+int main()
+{
+    // 定义新的枚举变量
+    Color::Type c = Color::RED;
+    cout << c << endl;
     /**
-     * @brief 通过vptr指针访问virtual table，因为虚表中每个元素(虚函数指针)在64位编译器下是8个字节，因此通过*(unsigned long *)vptr_addr取出前8字节，
-     * 后面加上偏移量就是每个函数的地址！
+     * 上述的另一种方法：
+     * using namespace Color; // 定义新的枚举变量
+     * Type c = RED;
      */
-    void* func_addr = (void *)*((unsigned long *)vptr_addr+offset);
-    printf("func_addr:%p\n",func_addr);
-    return (Fun)func_addr;
-}
-int main(void)
-{
-    Base ptr;
-    Derived d;
-    Base *pt = new Derived(); // 基类指针指向派生类实例
-    Base &pp = ptr; // 基类引用指向基类实例
-    Base &p = d; // 基类引用指向派生类实例
-    cout<<"基类对象直接调用"<<endl;
-    ptr.fun1();
-    cout<<"基类对象调用基类实例"<<endl;
-    pp.fun1();
-    cout<<"基类指针指向派生类实例并调用虚函数"<<endl;
-    pt->fun1();
-    cout<<"基类引用指向派生类实例并调用虚函数"<<endl;
-    p.fun1();
+    Color1 c1;
+    cout << c1.RED << endl;
 
-    // 手动查找vptr 和 vtable
-    Fun f1 = getAddr(pt, 0);
-    (*f1)();
-    Fun f2 = getAddr(pt, 1);
-    (*f2)();
-    delete pt;
+    Color1::Type c11 = Color1::BLUE;
+    cout << c11 << endl;
+
+    Color2 c2 = Color2::RED;
+    cout << static_cast<int>(c2) << endl;
+
+    char c3 = static_cast<char>(Color3::RED);
+    cout << c3 << endl;
     return 0;
 }
