@@ -32,4 +32,9 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
 aux_source_directory(. sources)
 
+include_directories(/usr/include/python3.8)
+link_directories(/usr/lib/python3.8)
+
 add_executable(main main.cpp ${sources})
+
+target_link_libraries(main python3.8)
